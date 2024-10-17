@@ -24,12 +24,12 @@ export default defineConfig({
         display: "fullscreen",
         icons: [
           {
-            src: '.src/assets/image/test192.png',
+            src: 'test192.png',
             sizes: '192x192',
             type: 'image/png'
           },
           {
-            src: '.src/assets/image/test512.png',
+            src: 'test512.png',
             sizes: '512x512',
             type: 'image/png'
           }

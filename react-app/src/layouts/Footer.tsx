@@ -10,13 +10,13 @@ const Footer: React.FC = () => {
             <Link to="/">登録</Link>
           </li>
           <li>
-            <Link to="/Graph">履歴</Link>
+            <Link to="/graph">履歴</Link>
           </li>
           <li>
-            <Link to="/Liquidation">清算</Link>
+            <Link to="/liquidation">清算</Link>
           </li>
           <li>
-            <Link to="/Settings">設定</Link>
+            <Link to="/settings">設定</Link>
           </li>
         </ul>
         </nav>

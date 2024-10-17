@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
@@ -8,19 +8,17 @@ const Login: React.FC = () => {
 
   const handleSubmit = async () => (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    navigate('/')
   };
-//   username: string, password: string
 
   const LoginProcess = async () => {
     console.log('Username:', username);
     console.log('Password:', password);
     // ここでAPIにリクエストを送信する処理を追加できます
-    await localStorage.setItem("Username", username);
+    localStorage.setItem("Username", username);
     const loggedIn = localStorage.getItem("Username");
     console.log('logined:', loggedIn);
     console.log('logined:', loggedIn != null);
-    await navigate('/')
+    navigate('/')
   }
 
   return (
@@ -56,10 +54,11 @@ const Login: React.FC = () => {
             required
           />
         </div>
-        <button type="submit" className="btn" onClick={() => LoginProcess()}>
+        <button type="submit" className="btn-black" onClick={() => LoginProcess()}>
           Login
         </button>
-      </form>
+        <Link to="/signup">新規登録はこちらから</Link>
+      </form>   
     </div>
   );
 };
