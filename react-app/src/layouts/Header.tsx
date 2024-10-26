@@ -17,11 +17,11 @@ const Header: React.FC = () => {
   }
 
   const HogeComponent = () => {
-    const loggedIn = localStorage.getItem("Username");
-    if(loggedIn != null) {
+    const userName = localStorage.getItem("username");
+    if(userName != null) {
       return (
         <div>
-          <span>ユーザー：{loggedIn} </span>
+          <span>ユーザー：{userName} </span>
           <button type="submit" className="btn-white" onClick={() => Logout()}>
             Logout
           </button>
