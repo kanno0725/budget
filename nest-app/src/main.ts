@@ -16,6 +16,7 @@ async function bootstrap() {
     AppModule,
     new FastifyAdapter({ logger: true }),
   );
+  app.enableCors();
   const config = new DocumentBuilder()
     .setTitle('User example')
     .setDescription('The users API description')

@@ -1,11 +1,17 @@
-import { Module } from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { UsersController } from './controller/users.controller';
 import { AppService } from './app.service';
+// import { CorsMiddleware } from './cors.middleware';
 
 @Module({
   imports: [],
   controllers: [AppController, UsersController],
   providers: [AppService],
 })
+// export class AppModule implements NestModule {
+//   configure(consumer: MiddlewareConsumer) {
+//     consumer.apply(CorsMiddleware).forRoutes('*');
+//   }
+// }
 export class AppModule {}
