@@ -1,15 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
-
-type User = {
-  id: number;
-  name: string;
-  loginId: string;
-  password: string;
-  userGroupId: number;
-  themeColor: string;
-};
+import Login from '../commons/Login';
+import { User } from '../models/Users';
 
 export const SignIn: React.FC = () => {
   const navigate = useNavigate();
@@ -23,7 +16,7 @@ export const SignIn: React.FC = () => {
 
     const res = await axios.get<User>(`${import.meta.env.VITE_REACT_APP_API_URL}/users/${loginId}`)
     if (password == res.data.password) {
-      localStorage.setItem('username', res.data.name);
+      Login(res.data.id, res.data.name);
       navigate("/");
     } else {
       alert("パスワードが一致しません");
@@ -70,8 +63,7 @@ export const SignIn: React.FC = () => {
             新規登録は<Link to="/signup" className='text-sky-600'>こちら</Link>から
           </div>
         </form>
-    </div>
-        
+    </div>  
   );
 };
 

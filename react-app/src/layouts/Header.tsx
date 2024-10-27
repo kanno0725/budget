@@ -1,18 +1,14 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Header.css'; // Headerコンポーネントに対応するCSSファイルをインポート
-
+import { Logout } from '../commons/Login';
 
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
   
-  const Logout = () => {
-    localStorage.clear();
-    navigate('/Signin')
-  }
-
-  const Login = () => {
+  const onLogout = () => {
+    Logout();
     navigate('/signin')
   }
 
@@ -22,7 +18,7 @@ const Header: React.FC = () => {
       return (
         <div>
           <span>ユーザー：{userName} </span>
-          <button type="submit" className="btn-white" onClick={() => Logout()}>
+          <button type="submit" className="btn-white" onClick={() => onLogout()}>
             Logout
           </button>
         </div>
@@ -30,7 +26,7 @@ const Header: React.FC = () => {
       )
     }else{
       return (
-        <button type="submit" className="btn-white" onClick={() => Login()}>
+        <button type="submit" className="btn-white" onClick={() => navigate('/signin')}>
           Login
         </button>
       )
