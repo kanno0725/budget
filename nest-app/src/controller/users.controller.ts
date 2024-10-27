@@ -1,6 +1,6 @@
-import { Controller, Get, Param } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
+import { Controller, Get, Param, Post, Body } from '@nestjs/common';
 import { prisma } from '../model/prisma';
+import { CreateUserDto } from '../dto/users.dto';
 
 type User = {
   id: number;
@@ -20,12 +20,17 @@ export class UsersController {
 
   @Get(':loginId')
   async getUserProfile(@Param() params): Promise<User> {
-    console.log(params.loginId);
     const resUser = await prisma.users.findUnique({
       where: {
         loginId: `${params.loginId}`,
       },
     });
+    return resUser;
+  }
+
+  @Post('')
+  async createUser(@Body() data: CreateUserDto): Promise<User> {
+    const resUser = await prisma.users.create({ data });
     return resUser;
   }
 }
