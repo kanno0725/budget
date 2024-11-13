@@ -12,7 +12,7 @@ const Header: React.FC = () => {
     navigate('/signin')
   }
 
-  const HogeComponent = () => {
+  const Account = () => {
     const userName = localStorage.getItem("username");
     if(userName != null) {
       return (
@@ -38,7 +38,7 @@ const Header: React.FC = () => {
       <Link to="/" className="logo">
         test
       </Link>
-      <HogeComponent />
+      <Account />
     </header>
   );
 };

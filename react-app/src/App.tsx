@@ -17,7 +17,7 @@ import MyRoutes from './routes/MyRoutes';
 
 function Space() {
   return (
-    <div className="m-10">
+    <div className="m-9">
       <p/>
     </div>
   );

@@ -28,6 +28,16 @@ export class UsersController {
     return resUser;
   }
 
+  @Get(':userGroupId/group-users')
+  async getGroupUsers(@Param() params): Promise<User[]> {
+    const resUsers = await prisma.users.findMany({
+      where: {
+        userGroupId: Number(params.userGroupId),
+      },
+    });
+    return resUsers;
+  }
+
   @Post('')
   async createUser(@Body() data: CreateUserDto): Promise<User> {
     const resUser = await prisma.users.create({ data });

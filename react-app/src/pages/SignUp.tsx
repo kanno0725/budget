@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+
+
 import Login from '../commons/Login';
 import { UserGroup } from '../models/UserGroups';
 
@@ -42,7 +44,7 @@ export const SignUp: React.FC = () => {
       if(res.status == 201) {
         alert('アカウントが作成されました');
         // ログインも行う
-        Login(res.data.id, res.data.name);
+        Login(res.data.id, res.data.name, res.data.userGroupId);
         navigate("/")
       } else {
         alert(`アカウント作成失敗 error code = ${res.status}`);
@@ -123,14 +125,15 @@ export const SignUp: React.FC = () => {
       <div className="mb-6">
         <label className="form-label" htmlFor="themeColor">テーマカラー</label>
         <input
-            type="text"
+            type="color"
             id="themeColor"
-            className="form-input"
+            // className="form-input"
             placeholder="テーマカラー"
             value={themeColor}
             onChange={(e) => setThemeColor(e.target.value)}
             required
         />
+        { themeColor }
       </div>
       <div>
         <button type="submit" className="btn-black">登録</button>

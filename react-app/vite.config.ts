@@ -17,9 +17,9 @@ export default defineConfig({
       },
       includeAssets: ['assets/favicon.ico'],
       manifest: {
-        name: 'PWA Hoge App',
-        short_name: 'App Name',
-        description: 'test app',
+        name: 'PWA budget App',
+        short_name: 'budget app',
+        description: 'budget',
         theme_color: '#27272A',
         display: "fullscreen",
         icons: [
