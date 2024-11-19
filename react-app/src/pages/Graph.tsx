@@ -6,26 +6,50 @@ import { PaymentCategory } from '../models/PaymentCategory';
 import BaseModal from '../components/modals/BaseModal';
 
 function PaymentsTable(props: { 
-    payments: GetPayment[] | null | undefined;
+    // payments: GetPayment[] | null | undefined;
     showModal: boolean;
     setShowModal: Dispatch<React.SetStateAction<boolean>>
-    fetchPayments: () => Promise<void>;
+    // fetchPayments: () => Promise<void>;
+    setFormPayment: Dispatch<React.SetStateAction<GetPayment | null | undefined>>
   }) {
+  const [name, setName] = useState(false);
+  const [payments, setPayments] = useState<GetPayment[] | null>();
   
   const rows: JSX.Element[] = [];
+
   const onEdit = async (payment: GetPayment) => {
     props.setShowModal(true)
+    props.setFormPayment(payment)
     console.log(payment.name)
   }
+
   const onDelete = async (payment: GetPayment) => {
     try {
       await axios.delete(`${import.meta.env.VITE_REACT_APP_API_URL}/payments/${payment.id}`);
     } catch (err) {
       console.error(err);
     }
-    props.fetchPayments();
+    fetchPayments();
   }
-  props.payments?.forEach(el => {
+
+  const fetchPayments = async () => {
+    try {
+      const res = await axios.get<GetPayment[]>(`${import.meta.env.VITE_REACT_APP_API_URL}/payments/${localStorage.getItem('userid_str')}/user-payments`);
+      res.data.forEach(el => {
+        el.paymentDatetime = new Date(el.paymentDatetime).toLocaleDateString()
+      });
+      setPayments(res.data);
+      console.log(payments)
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    fetchPayments();
+    console.log("done")
+  }, []);
+  payments?.forEach(el => {
     rows.push(
       <tr key={el.id}>
         <td className='text-left'>{el.paymentDatetime}</td>
@@ -50,12 +74,12 @@ function PaymentsTable(props: {
       <table className='min-w-full divide-y divide-gray-200 dark:divide-neutral-700'>
         <thead>
           <tr>
-            <th className='text-left'>日付</th>
-            <th className='text-left'>品目名</th>
-            <th className='text-left'>金額</th>
-            <th className='text-left'>カテゴリー</th>
-            <th className='text-left'></th>
-            <th className='text-left'></th>
+            <th className='text-left text-xl'>日付</th>
+            <th className='text-left text-xl'>品目名</th>
+            <th className='text-left text-xl'>金額</th>
+            <th className='text-left text-xl'>分類</th>
+            <th className='text-left text-xl'></th>
+            <th className='text-left text-xl'></th>
           </tr>
         </thead>
         <tbody className="">{rows}</tbody>
@@ -68,35 +92,44 @@ function PaymentsTable(props: {
 
 
 const Grapgh: React.FC = () => {
-  const [payments, setPayments] = useState<GetPayment[] | null>();
+  // const [payments, setPayments] = useState<GetPayment[] | null>();
+  const [formPayment, setFormPayment] = useState<GetPayment | null>();
   const [paymentCategories, setPaymentCategories] = useState<PaymentCategory[] | null>();
   const [error, setError] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
+  
 
-  const fetchPayments = async () => {
-    try {
-      const res = await axios.get<GetPayment[]>(`${import.meta.env.VITE_REACT_APP_API_URL}/payments/${localStorage.getItem('userid_str')}/user-payments`);
-      res.data.forEach(el => {
-        el.paymentDatetime = new Date(el.paymentDatetime).toLocaleDateString()
-      });
-      setPayments(res.data);
-      console.log(payments)
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  // const fetchPayments = async () => {
+  //   try {
+  //     const res = await axios.get<GetPayment[]>(`${import.meta.env.VITE_REACT_APP_API_URL}/payments/${localStorage.getItem('userid_str')}/user-payments`);
+  //     res.data.forEach(el => {
+  //       el.paymentDatetime = new Date(el.paymentDatetime).toLocaleDateString()
+  //     });
+  //     setPayments(res.data);
+  //     console.log(payments)
+  //   } catch (err) {
+  //     console.error(err);
+  //   }
+  // };
 
-  useEffect(() => {
-    fetchPayments();
-    console.log("done")
-  }, []);
+  // useEffect(() => {
+  //   fetchPayments();
+  //   console.log("done")
+  // }, []);
 
   return (
     <div>
-      <BaseModal showFlag={showModal} showModal={showModal} setShowModal={setShowModal} />
-      <h2 className="text-2xl mb-4">履歴</h2>
-        <div className='p-5'>
-          <PaymentsTable payments={payments} showModal={showModal} setShowModal={setShowModal} fetchPayments={fetchPayments} />
+      <BaseModal showFlag={showModal} showModal={showModal} setShowModal={setShowModal} formPayment={formPayment} />
+      <div className="container m-4">
+        <div className='pr-5'>
+            <PaymentsTable 
+              // payments={payments} 
+              showModal={showModal} 
+              setShowModal={setShowModal} 
+              setFormPayment={setFormPayment}
+              // fetchPayments={fetchPayments}
+            />
+          </div>
         </div>
     </div>
   );

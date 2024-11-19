@@ -1,4 +1,12 @@
-import { Controller, Get, Param, Post, Body, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Post,
+  Put,
+  Body,
+  Delete,
+} from '@nestjs/common';
 import { prisma } from '../model/prisma';
 import type { Prisma } from '@prisma/client';
 import { CreatePaymentDto, PaymentIdsDto } from '../dto/payments.dto';
@@ -29,11 +37,7 @@ export class PaymentsController {
   @Get(':userId/user-payments')
   async getUserPayments(@Param() params): Promise<GetPayment[]> {
     const resPC = await prisma.payments.findMany({
-      orderBy: [
-        {
-          paymentDatetime: 'asc',
-        },
-      ],
+      orderBy: [{ paymentDatetime: 'asc' }, { createdAt: 'asc' }],
       include: {
         paymentCategory: { select: { name: true, color: true } },
       },
@@ -54,11 +58,7 @@ export class PaymentsController {
   @Get(':userGroupId/group-payments')
   async getGroupPayments(@Param() params): Promise<GetPayment[]> {
     const resPC = await prisma.payments.findMany({
-      orderBy: [
-        {
-          paymentDatetime: 'asc',
-        },
-      ],
+      orderBy: [{ paymentDatetime: 'asc' }, { createdAt: 'asc' }],
       include: {
         paymentCategory: { select: { name: true, color: true } },
         paymentUser: { select: { name: true, userGroupId: true } },
@@ -85,6 +85,24 @@ export class PaymentsController {
   @Post('')
   async postPayment(@Body() data: CreatePaymentDto): Promise<Payment> {
     const resPayment = await prisma.payments.create({ data });
+    return resPayment;
+  }
+
+  @Put(':paymentId')
+  async putPayment(
+    @Param() params,
+    @Body() body: CreatePaymentDto,
+  ): Promise<Payment> {
+    // console.log(params.paymentId);
+    const resPayment = await prisma.payments.update({
+      where: { id: Number(params.paymentId) },
+      data: {
+        name: body.name,
+        price: body.price,
+        paymentDatetime: body.paymentDatetime,
+        paymentCategoryId: body.paymentCategoryId,
+      },
+    });
     return resPayment;
   }
 

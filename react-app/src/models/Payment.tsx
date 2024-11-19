@@ -22,3 +22,11 @@ export type GetPayment = {
   paymentUserName: string;
   paymentUserGroupId: string;
 };
+
+export type FormPayment = {
+  id: number;
+  name: string;
+  price: number;
+  paymentDatetime: string;
+  paymentCategoryId: number;
+};

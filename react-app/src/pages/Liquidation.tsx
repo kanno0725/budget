@@ -59,12 +59,12 @@ function PaymentsTable(props: {
     <table className='min-w-full divide-y divide-gray-200 dark:divide-neutral-700'>
       <thead>
         <tr>
-          <th className='text-left'>清算</th>
+          <th className='text-left'>選択</th>
           <th className='text-left'>日付</th>
           <th className='text-left'>品目名</th>
           <th className='text-left'>金額</th>
           <th className='text-left'>立て替え</th>
-          <th className='text-left'>カテゴリー</th>
+          <th className='text-left'>分類</th>
         </tr>
       </thead>
       <tbody className="">{rows}</tbody>
@@ -136,6 +136,10 @@ const Liquidation: React.FC = () => {
             const maxPayUser = PayedUsers.reduce((a,b)=>a.price>b.price?a:b)
             const minPayUser = PayedUsers.reduce((a,b)=>a.price<b.price?a:b)
             const liqPrice = (totalCost / userNum) - minPayUser.price
+            // 最小負担者と負担の平均値の差額が0になったら計算終了
+            if(liqPrice == 0 ){
+              break
+            }
             LiquidationResult.push(
               {
                 payUserName: minPayUser.payUserName,
@@ -183,13 +187,16 @@ const Liquidation: React.FC = () => {
   }
 
   return (
-    <div className="">
-		  <h2 className="text-2xl mb-4">清算画面</h2>
+    
+    <div className="container m-4">
+		  {/* <h2 className="text-2xl mb-4">清算画面</h2> */}
     {/* <Table data= {data}/> */}
-      <div className='p-5'>
+      <div className='pr-4'>
+      <div className="overflow-auto h-1/2 ...">
         <PaymentsTable payments={payments} checkedDataPar={checkedData} setcheckedDataPar={setcheckedData} />
       </div>
-      <div className='p-5'>
+      </div>
+      <div className='pr-4'>
         清算結果
         <LiquidationDisplay LiquidationResult={liquidationResult} />
         <button type="submit" className="btn-black"onClick={onLiquidate} >清算</button>
