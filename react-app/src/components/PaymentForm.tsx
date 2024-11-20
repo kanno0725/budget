@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { PaymentCategory } from '../models/PaymentCategory';
-import { toISOStringWithTimezone } from '../utils/Time';
+import { toISOStringWithTimezone, toFormString } from '../utils/Time';
 import { GetPayment } from '../models/Payment';
 
 const PaymentForm = (props: {
@@ -11,7 +11,7 @@ const PaymentForm = (props: {
   const [id, setId] =  useState(props.formPayment?.id? props.formPayment?.id:'');
   const [name, setName] =  useState(props.formPayment?.name? props.formPayment?.name:'');
   const [price, setPrice] = useState(props.formPayment?.price? props.formPayment?.price:'');
-  const [paymentDatetime, setPaymentDatetime] = useState(props.formPayment?.paymentDatetime? props.formPayment?.paymentDatetime:'');
+  const [paymentDatetime, setPaymentDatetime] = useState(props.formPayment?.paymentDatetime? toFormString(new Date(props.formPayment?.paymentDatetime)):'');
   const [selectedPaymentCategoryId, setSelectedPaymentCategoryId] = useState(props.formPayment?.paymentCategoryId? props.formPayment?.paymentCategoryId:'');
   const [isArrowActive, setArrowActive] = useState(false);
   const [paymentCategories, setPaymentCategories] = useState<PaymentCategory[] | null>();
@@ -23,7 +23,6 @@ const PaymentForm = (props: {
         const res = await axios.get<PaymentCategory[]>(`${import.meta.env.VITE_REACT_APP_API_URL}/paymentcategories/${localStorage.getItem('usergroupid_str')}`);
         console.log(`/paymentcategory/${localStorage.getItem('usergroupid_str')}`)
         setPaymentCategories(res.data);
-        console.log("done")
       } catch (err) {
         console.error(err);
       }
@@ -156,7 +155,6 @@ const PaymentForm = (props: {
             </div>
             {/* {paymentDatetime}
             {toISOStringWithTimezone(new Date(paymentDatetime))} */}
-            {id}
             {/* {toISOStringWithTimezone(new Date(paymentDatetime))} */}
             {/* <label className="form-label" htmlFor="userGroupId">カテゴリー</label> */}
             <label className="col-span-1 text-xl">
