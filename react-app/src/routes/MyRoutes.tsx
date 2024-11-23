@@ -8,6 +8,7 @@ import Payment from '../pages/Payment';
 import Graph from '../pages/Graph';
 import Liquidation from '../pages/Liquidation';
 import Settings from '../pages/Settings';
+import Liquidation_test from '../pages/Liquidation_test';
 
 
 const MyRoutes: React.FC = () => {
@@ -18,7 +19,7 @@ const MyRoutes: React.FC = () => {
       <Route path="/signup" element={<SignUp />} />
       <Route path="/" element={<Payment />} />
       <Route path="/graph" element={<Graph />} />
-      <Route path="/liquidation" element={<Liquidation />} />
+      <Route path="/liquidation" element={<Liquidation_test />} />
       <Route path="/settings" element={<Settings />} />
 
       {/* <Route path="/" element={ loggedIn != null ? <Payment /> : <SignIn />} />

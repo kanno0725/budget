@@ -1,6 +1,15 @@
 import React, { type Dispatch, useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
-import { ColumnDef, flexRender, getCoreRowModel, useReactTable, RowSelectionState, getGroupedRowModel, getExpandedRowModel  } from '@tanstack/react-table';
+import {
+  MaterialReactTable,
+  useMaterialReactTable,
+  type MRT_ColumnDef,
+} from 'material-react-table';
+
+import {
+  Box,
+} from '@mui/material';
+import { parse, format } from 'date-fns';
 
 import { GetPayment } from '../models/Payment';
 import { User } from '../models/User';
@@ -17,164 +26,133 @@ type LiquidationRes = {
   price: number
 }
 
-const columns: ColumnDef<GetPayment>[] = [
-  {
-    id: 'select',
-    header: ({ table }) => (
-      <input
-        type="checkbox"
-        checked={table.getIsAllRowsSelected()}
-        onChange={table.getToggleAllRowsSelectedHandler()}
-      />
-    ),
-    cell: ({ row }) => (
-      <input
-        type="checkbox"
-        checked={row.getIsSelected()}
-        onChange={row.getToggleSelectedHandler()}
-      />
-    ),
-  },
-  {
-    accessorKey: 'paymentDate',
-    header: '日付',
-  },
-  {
-    accessorKey: 'name',
-    header: '品目名',
-  },
-  {
-    accessorKey: 'price',
-    header: '金額',
-  },
-  {
-    accessorKey: 'paymentUserName',
-    header: '立て替え',
-  },
-  {
-    accessorKey: 'paymentCategoryName',
-    header: '分類',
-  },
-];
-
-function PaymentsTable(props: { 
+const PaymentsTable = (props: { 
   payments: GetPayment[] | null | undefined,
   checkedDataPar: GetPayment[] | null | undefined
   setcheckedDataPar: Dispatch<React.SetStateAction<GetPayment[] | null | undefined>>
-}) {
-  const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
-  const rows: JSX.Element[] = [];
+}) => {
+  const columns = useMemo<MRT_ColumnDef<GetPayment>[]>(
+    () => [
+      {
+        accessorKey: 'paymentDate',
+        header: '日付',
+        Cell: ({ cell }) => (
+          <Box>
+            {format(parse(cell.getValue<string>(), 'yyyy/MM/dd', new Date()), "MM/dd")}
+          </Box>
+        )
+      },
+      {
+        accessorKey: 'name',
+        header: '品目名',
+      },
+      {
+        accessorKey: 'price',
+        header: '金額',
+      },
+      {
+        accessorKey: 'paymentUserName',
+        header: '立て替え',
+      },
+      {
+        accessorKey: 'paymentCategoryName',
+        header: '分類',
+        Cell: ({ cell, row }) => (
+          <Box
+            component="span"
+            sx={() => ({
+              backgroundColor:
+                row.original.paymentCategoryColor,
+              borderRadius: '0.25rem',
+              // color: '#fff',
+              maxWidth: '9ch',
+              p: '0.25rem',
+            })}
+          >
+            {cell.getValue<string>()}
+          </Box>
+        ),
+      },
+    ],
+    [],
+  );
 
+  const paymentData: GetPayment[] = props.payments ? props.payments : []
 
-  let paymentData: GetPayment[] = [];
-  if(props.payments !== undefined && props.payments !== null){
-    paymentData = props.payments;
-  }
-
-  const table = useReactTable<GetPayment>({
-    data: paymentData,
+  const table = useMaterialReactTable({
     columns,
-    getCoreRowModel: getCoreRowModel(),
-    // select
-    onRowSelectionChange: setRowSelection,
-    state: {
-      rowSelection,
+    data: paymentData,
+    enableKeyboardShortcuts: false,
+    enableColumnActions: false,
+    enableColumnFilters: false,
+    enablePagination: false,
+    positionPagination: 'none',
+    positionGlobalFilter: 'left',
+    enableSorting: false,
+    // tool bar
+    enableDensityToggle: false,
+    enableHiding: false,
+    // default table style
+    layoutMode: "grid",
+    defaultColumn: {
+      minSize: 30,
+      size: 40,
+      grow: 1,
+      muiTableBodyCellProps: {
+        style: { 
+          padding: 3,
+       },
+      },
+      muiTableHeadCellProps: {
+        style: {
+          padding: 3,
+       },
+      },
+      muiFilterCheckboxProps: {
+        style: {
+          padding: 3,
+       },
+      }
     },
+    muiTablePaperProps: {
+      sx: {
+        // maxHeight: '300px',
+      }
+    },
+    muiTableContainerProps: {
+      sx: {
+        overflowX: "hidden",
+        maxHeight: '300px',
+        overflowY: "auto", 
+      },
+    },
+    // select
+    enableRowPinning: true,
     enableRowSelection: true,
-    // group
-    getGroupedRowModel: getGroupedRowModel(),
-    getExpandedRowModel: getExpandedRowModel(),
+    enableStickyHeader: true,
+    rowPinningDisplayMode: 'select-sticky',
+    positionToolbarAlertBanner: 'none',
+    getRowId: (row) => String(row.id),
+    initialState: {
+    },
+    muiTableBodyRowProps: ({ row }) => {
+      return {
+        sx: {
+          //Set a fixed height for pinned rows
+          height: row.getIsPinned() ? "36px" : "35px",
+        },
+      };
+    },
   });
-  table.setGrouping(['paymentDate']);
 
   useEffect(() => {
     props.setcheckedDataPar(table.getSelectedRowModel().rows.map((el) => el.original))
-  },[rowSelection]);
+  }, [table.getState().rowSelection]);
 
-  // console.log(table.getSelectedRowModel().rows)
-  
-  // props.payments?.forEach(el => {
-  //   rows.push(
-  //     <tr key={el.id}>
-  //       <td className='text-left'>
-  //         <input
-  //           type="checkbox"
-  //           checked={props.checkedDataPar?.includes(el)}
-  //           onChange={() => {
-  //             if (props.checkedDataPar == null) {
-  //               props.setcheckedDataPar([el])
-  //             } else if (props.checkedDataPar?.includes(el)) {
-  //               props.setcheckedDataPar(
-  //                 props.checkedDataPar.filter((d) => (d !== el))
-  //               )
-  //             } else {
-  //               props.setcheckedDataPar([...props.checkedDataPar, el])
-  //             }
-  //           }}
-  //         />
-  //       </td>
-  //       <td className='text-left'>{el.paymentDatetime}</td>
-  //       <td className='text-left'>{el.name}</td>
-  //       <td className='text-left'>{el.price}</td>
-  //       <td className='text-left'>{el.paymentUserName}</td>
-  //       <td className='text-left'>
-  //         <div className='p-1 mr-3 rounded-lg text-center' style={{backgroundColor: el.paymentCategoryColor}}>
-  //           {el.paymentCategoryName}
-  //         </div>
-  //       </td>
-  //     </tr>
-  //   )
-  // });
   return (
-    <div>
-      <table className='min-w-full divide-y divide-gray-200 dark:divide-neutral-700'>
-        <thead>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <th key={header.id}>
-                  {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody>
-          {table.getRowModel().rows.map((row) => (
-            <tr key={row.id}>
-              {row.getVisibleCells().map((cell) => (
-                <td 
-                  key={cell.id}
-                  className='p-1 text-center'
-                >
-                  <span
-                    className={cell.column.id === 'paymentCategoryName' ? 'p-1 m-1 rounded-lg' : undefined}
-                    style={cell.column.id === 'paymentCategoryName' ?
-                      { backgroundColor: row.original.paymentCategoryColor, } : undefined
-                    }
-                  >
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </span>
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div >
+      <MaterialReactTable table={table} />
     </div>
-    // <table className='min-w-full divide-y divide-gray-200 dark:divide-neutral-700'>
-    //   <thead>
-    //     <tr>
-    //       <th className='text-left'>選択</th>
-    //       <th className='text-left'>日付</th>
-    //       <th className='text-left'>品目名</th>
-    //       <th className='text-left'>金額</th>
-    //       <th className='text-left'>立て替え</th>
-    //       <th className='text-left'>分類</th>
-    //     </tr>
-    //   </thead>
-    //   <tbody className="">{rows}</tbody>
-    // </table>
   );
 };
 
@@ -293,18 +271,12 @@ const Liquidation_test: React.FC = () => {
   }
 
   return (
-    
-    <div className="container m-4">
-		  {/* <h2 className="text-2xl mb-4">清算画面</h2> */}
-    {/* <Table data= {data}/> */}
-      <div className='pr-4'>
-      <div className="overflow-auto h-1/2 ...">
-
+    <div className="container my-4">
+      <div className=""> 
         <PaymentsTable payments={payments} checkedDataPar={checkedData} setcheckedDataPar={setcheckedData} />
       </div>
-      </div>
-      <div className='pr-4'>
-        清算結果test
+      <div className=''>
+        清算方法
         <LiquidationDisplay LiquidationResult={liquidationResult} />
         <button type="submit" className="btn-black"onClick={onLiquidate} >清算</button>
       </div>
