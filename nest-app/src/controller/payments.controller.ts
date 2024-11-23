@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   Param,
+  Query,
   Post,
   Put,
   Body,
@@ -55,8 +56,14 @@ export class PaymentsController {
     return res;
   }
 
-  @Get(':userGroupId/group-payments')
-  async getGroupPayments(@Param() params): Promise<GetPayment[]> {
+  @Get('')
+  async getGroupPayments(
+    @Query('groupId') groupId: number,
+    @Query('year') year: number,
+    @Query('month') month: number,
+  ): Promise<GetPayment[]> {
+    const startMonth: Date = new Date(year, month - 1);
+    const endMonth: Date = new Date(year, month);
     const resPC = await prisma.payments.findMany({
       orderBy: [{ paymentDatetime: 'asc' }, { createdAt: 'asc' }],
       include: {
@@ -65,9 +72,13 @@ export class PaymentsController {
       },
       where: {
         paymentUser: {
-          userGroupId: Number(params.userGroupId),
+          userGroupId: Number(groupId),
         },
-        isLiquidated: false,
+        paymentDatetime: {
+          gte: startMonth, // Greater than or equal (>=)
+          lt: endMonth, // Less than (<)
+        },
+        // isLiquidated: false,
         isDeleted: false,
       },
     });
