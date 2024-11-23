@@ -25,7 +25,7 @@ function Space() {
 
 const App: React.FC = () => {
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-screen overflow-hidden">
       <Router>
         <Header />
         <Space />

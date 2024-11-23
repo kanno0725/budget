@@ -1,100 +1,26 @@
 import React, { type Dispatch, useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 
+import { MRT_RowSelectionState } from 'material-react-table';
+// import { DatePicker } from '@mui/x-date-pickers/DatePicker'
+
 import { GetPayment } from '../models/Payment';
 import { User } from '../models/User';
-// import Table from '../components/table';
 
-type PayedUser = {
-  payUserName: string,
-  price: number
-}
-
-type LiquidationRes = {
-  payUserName: string,
-  receivedUserName: string,
-  price: number
-}
-
-function PaymentsTable(props: { 
-  payments: GetPayment[] | null | undefined,
-  checkedDataPar: GetPayment[] | null | undefined
-  setcheckedDataPar: Dispatch<React.SetStateAction<GetPayment[] | null | undefined>>
-}) {
-  const rows: JSX.Element[] = [];
-
-  props.payments?.forEach(el => {
-    rows.push(
-      <tr key={el.id}>
-        <td className='text-left'>
-          <input
-            type="checkbox"
-            checked={props.checkedDataPar?.includes(el)}
-            onChange={() => {
-              if (props.checkedDataPar == null) {
-                props.setcheckedDataPar([el])
-              } else if (props.checkedDataPar?.includes(el)) {
-                props.setcheckedDataPar(
-                  props.checkedDataPar.filter((d) => (d !== el))
-                )
-              } else {
-                props.setcheckedDataPar([...props.checkedDataPar, el])
-              }
-            }}
-          />
-        </td>
-        <td className='text-left'>{el.paymentDatetime}</td>
-        <td className='text-left'>{el.name}</td>
-        <td className='text-left'>{el.price}</td>
-        <td className='text-left'>{el.paymentUserName}</td>
-        <td className='text-left'>
-          <div className='p-1 mr-3 rounded-lg text-center' style={{backgroundColor: el.paymentCategoryColor}}>
-            {el.paymentCategoryName}
-          </div>
-        </td>
-      </tr>
-    )
-  });
-  return (
-    <table className='min-w-full divide-y divide-gray-200 dark:divide-neutral-700'>
-      <thead>
-        <tr>
-          <th className='text-left'>選択</th>
-          <th className='text-left'>日付</th>
-          <th className='text-left'>品目名</th>
-          <th className='text-left'>金額</th>
-          <th className='text-left'>立て替え</th>
-          <th className='text-left'>分類</th>
-        </tr>
-      </thead>
-      <tbody className="">{rows}</tbody>
-    </table>
-  );
-};
-
-function LiquidationDisplay(props: { 
-  LiquidationResult: LiquidationRes[],
-}) {
-  const rows: JSX.Element[] = [];
-
-  props.LiquidationResult?.forEach(el => {
-    rows.push(
-      <p key={el.payUserName}>{el.payUserName} → {el.receivedUserName} {el.price}円</p>
-    )
-  });
-  return (
-    <div>{rows}</div>
-  );
-};
+import LiquidationPaymentTable from '../components/LiquidationPaymentTable';
+import LiquidationTable from '../components/LiquidationTable';
 
 const Liquidation: React.FC = () => {
   const [payments, setPayments] = useState<GetPayment[] | null>();
   const [users, setUsers] = useState<User[] | null>();
-  const [checkedData, setcheckedData] = useState<GetPayment[] | null | undefined>([]);
+  const [checkedData, setCheckedData] = useState<GetPayment[] | null | undefined>([]);
+  const [selectedRowIds, setSelectedRowIds] = useState<MRT_RowSelectionState>({});
+  const [selectedYear, setSelectedYear] = useState(`${new Date().getFullYear()}`);
+  const [selectedMonth, setSelectedMonth] = useState(`${new Date().getMonth() + 1}`);
 
-  const fetchPayments = async () => {
+  const fetchPayments = async (year: string, month: string) => {
     try {
-      const res = await axios.get<GetPayment[]>(`${import.meta.env.VITE_REACT_APP_API_URL}/payments/${localStorage.getItem('usergroupid_str')}/group-payments`);
+      const res = await axios.get<GetPayment[]>(`${import.meta.env.VITE_REACT_APP_API_URL}/payments?groupId=${localStorage.getItem('usergroupid_str')}&year=${year}&month=${month}`);
       res.data.forEach(el => {
         el.paymentDatetime = new Date(el.paymentDatetime).toLocaleDateString()
       });
@@ -113,58 +39,15 @@ const Liquidation: React.FC = () => {
     }
   };
 
-  const liquidationResult: LiquidationRes[] = useMemo(() => {
-    let PayedUsers: PayedUser[] = []
-    const LiquidationResult: LiquidationRes[] = []
-    if(checkedData !== undefined) {
-      if (checkedData !== null && checkedData.length > 0) {
-        // 全体の負担額を計算
-        const totalCost = checkedData.map(d => d.price).reduce((acc, score) => acc + score, 0);
-        // 
-        if(users !== undefined && users !== null) {
-          // PayedUserのリストを作成
-          users.forEach((user) => {
-            const userTotalCost = checkedData.filter((d) => d.paymentUserId == user.id).map(d => d.price).reduce((acc, score) => acc + score, 0);
-            PayedUsers.push({
-              payUserName: user.name,
-              price: userTotalCost
-            })
-          })
-          // 清算結果を計算
-          const userNum = users?.length
-          for (let i:number = 0; i < userNum - 1; i++) {
-            const maxPayUser = PayedUsers.reduce((a,b)=>a.price>b.price?a:b)
-            const minPayUser = PayedUsers.reduce((a,b)=>a.price<b.price?a:b)
-            const liqPrice = (totalCost / userNum) - minPayUser.price
-            // 最小負担者と負担の平均値の差額が0になったら計算終了
-            if(liqPrice == 0 ){
-              break
-            }
-            LiquidationResult.push(
-              {
-                payUserName: minPayUser.payUserName,
-                receivedUserName: maxPayUser.payUserName,
-                price: liqPrice
-              }
-            )
-            PayedUsers = PayedUsers.filter(function(x){return x.payUserName !== maxPayUser.payUserName});
-            PayedUsers = PayedUsers.filter(function(x){return x.payUserName !== minPayUser.payUserName});
-            maxPayUser.price -= liqPrice
-            minPayUser.price += liqPrice
-
-            PayedUsers.push(maxPayUser)
-            PayedUsers.push(minPayUser)
-          } 
-        }
-      }
-    }
-    return LiquidationResult;
-  }, [checkedData]);
-
+  // 画面読み込み時のデータ取得
   useEffect(() => {
-    fetchPayments();
+    fetchPayments(selectedYear, selectedMonth);
     fetchUsers();
   }, []);
+
+  useEffect(() => {
+    setCheckedData(payments?.filter((el) => Object.keys(selectedRowIds).includes(String(el.id))))
+  }, [selectedRowIds]);
 
   const onLiquidate = async () => {
     // 清算フラグを立てる
@@ -180,26 +63,38 @@ const Liquidation: React.FC = () => {
       console.error(err);
     }
     // 選択解除
-    setcheckedData([])
+    setSelectedRowIds({})
     // payment再読み込み
-    fetchPayments();
-    alert('清算を完了しました');
+    fetchPayments(selectedYear, selectedMonth)
+    alert('清算を完了しました')
+  }
+  const selectYearMonth = (value: string) => {
+    const [formYear, formMonth] = value.split('-');
+    setSelectedYear(formYear)
+    setSelectedMonth(formMonth)
+    fetchPayments(formYear, formMonth)
   }
 
   return (
-    
-    <div className="container m-4">
-		  {/* <h2 className="text-2xl mb-4">清算画面</h2> */}
-    {/* <Table data= {data}/> */}
-      <div className='pr-4'>
-      <div className="overflow-auto h-1/2 ...">
-        <PaymentsTable payments={payments} checkedDataPar={checkedData} setcheckedDataPar={setcheckedData} />
+    <div className="container">
+      <input type="month"
+        value={`${selectedYear}-${selectedMonth}`}
+        onChange={(e)=>selectYearMonth(e.target.value)}
+        className='m-1 font-medium text-lg w-36'
+      ></input>
+      <div className=""> 
+        <LiquidationPaymentTable 
+          payments={payments} 
+          selectedRowIds={selectedRowIds}
+          setSelectedRowIds={setSelectedRowIds}
+        />
       </div>
-      </div>
-      <div className='pr-4'>
-        清算結果
-        <LiquidationDisplay LiquidationResult={liquidationResult} />
-        <button type="submit" className="btn-black"onClick={onLiquidate} >清算</button>
+      <div className='m-2'>
+        清算方法
+        <div className='h-24 overflow-y-auto border-2'>
+          <LiquidationTable checkedData={checkedData} users={users} />
+        </div>
+        <button type="submit" className="btn-black" onClick={onLiquidate} >清算</button>
       </div>
     </div>
   );

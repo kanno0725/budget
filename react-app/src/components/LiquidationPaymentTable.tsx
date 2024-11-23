@@ -4,7 +4,6 @@ import {
   useMaterialReactTable,
   type MRT_ColumnDef,
   MRT_RowSelectionState,
-  MRT_TableOptions,
 } from 'material-react-table';
 
 import {
@@ -23,6 +22,7 @@ const LiquidationPaymentTable = (props:{
   selectedRowIds: MRT_RowSelectionState
   setSelectedRowIds: Dispatch<React.SetStateAction<MRT_RowSelectionState>>
 }) => {
+  console.log(props.payments)
   // console.log("liquidation table rendering")
   const columns = useMemo<MRT_ColumnDef<GetPayment>[]>(
     () => [
@@ -79,9 +79,9 @@ const LiquidationPaymentTable = (props:{
     enableColumnActions: false,
     enableColumnFilters: false,
     enablePagination: false,
+    enableSorting: false,
     positionPagination: 'none',
     positionGlobalFilter: 'left',
-    enableSorting: false,
     // tool bar
     enableDensityToggle: false,
     enableHiding: false,
@@ -109,20 +109,22 @@ const LiquidationPaymentTable = (props:{
     },
     muiTablePaperProps: {
       sx: {
-        // maxHeight: '300px',
+        // maxHeight: '400px',
+        elevation: 0,
       }
     },
     muiTableContainerProps: {
       sx: {
         overflowX: "hidden",
-        maxHeight: '300px',
+        maxHeight: '250px',
+        minHeight: '250px',
         overflowY: "auto", 
       },
     },
     // select
-    // enableRowPinning: true,
-    enableRowSelection: true,
     enableStickyHeader: true,
+    enableRowSelection: (row) => !row.original.isLiquidated,
+    // enableRowSelection: true,
     // rowPinningDisplayMode: 'select-sticky',
     positionToolbarAlertBanner: 'none',
     state: { rowSelection: props.selectedRowIds },
@@ -130,14 +132,16 @@ const LiquidationPaymentTable = (props:{
     getRowId: (row) => String(row.id),
     // initialState: {
     // },
-    // muiTableBodyRowProps: ({ row }) => {
-    //   return {
-    //     sx: {
-    //       //Set a fixed height for pinned rows
-    //       height: row.getIsPinned() ? "36px" : "35px",
-    //     },
-    //   };
-    // },
+    muiTableBodyRowProps: ({ row }) => {
+      return {
+        hover: false,
+        sx: {
+          //Set a fixed height for pinned rows
+          // height: row.getIsPinned() ? "36px" : "35px",
+          backgroundColor: row.original.isLiquidated ? "#cccccc" : undefined
+        },
+      };
+    },
   });
 
   return (

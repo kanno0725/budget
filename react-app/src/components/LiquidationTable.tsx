@@ -72,7 +72,7 @@ const LiquidationTable = (props: {
   
     liquidationResult?.forEach(el => {
       rows.push(
-        <p key={el.payUserName}>{el.payUserName} → {el.receivedUserName} {el.price}円</p>
+        <p key={el.payUserName}>{el.payUserName} → {el.receivedUserName} {Math.ceil(el.price)}円</p>
       )
     });
     return (

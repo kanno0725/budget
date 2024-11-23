@@ -21,6 +21,7 @@ export type GetPayment = {
   paymentDate: string;
   paymentUserName: string;
   paymentUserGroupId: string;
+  isLiquidated: boolean;
 };
 
 export type FormPayment = {
