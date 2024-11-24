@@ -4,7 +4,6 @@
   "description": "",
   "author": "",
   "private": true,
-  
   "license": "UNLICENSED",
   "scripts": {
     "build": "nest build",
@@ -29,6 +28,7 @@
     "@nestjs/platform-fastify": "^10.4.5",
     "@nestjs/swagger": "^7.4.2",
     "@prisma/client": "^5.20.0",
+    "date-fns": "^4.1.0",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1"
   },

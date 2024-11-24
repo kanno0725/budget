@@ -10,7 +10,7 @@ const Footer: React.FC = () => {
             <Link to="/">登録</Link>
           </li>
           <li>
-            <Link to="/graph">履歴</Link>
+            <Link to="/HistoryPayment">履歴</Link>
           </li>
           <li>
             <Link to="/liquidation">清算</Link>

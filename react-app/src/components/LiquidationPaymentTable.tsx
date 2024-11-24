@@ -22,8 +22,6 @@ const LiquidationPaymentTable = (props:{
   selectedRowIds: MRT_RowSelectionState
   setSelectedRowIds: Dispatch<React.SetStateAction<MRT_RowSelectionState>>
 }) => {
-  console.log(props.payments)
-  // console.log("liquidation table rendering")
   const columns = useMemo<MRT_ColumnDef<GetPayment>[]>(
     () => [
       {
@@ -31,7 +29,7 @@ const LiquidationPaymentTable = (props:{
         header: '日付',
         Cell: ({ cell }) => (
           <Box>
-            {format(parse(cell.getValue<string>(), 'yyyy/MM/dd', new Date()), "MM/dd")}
+            {format(parse(cell.getValue<string>(), 'yyyy-MM-dd', new Date()), "MM/dd")}
           </Box>
         )
       },

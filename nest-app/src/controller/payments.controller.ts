@@ -8,6 +8,8 @@ import {
   Body,
   Delete,
 } from '@nestjs/common';
+import { format } from 'date-fns';
+
 import { prisma } from '../model/prisma';
 import type { Prisma } from '@prisma/client';
 import { CreatePaymentDto, PaymentIdsDto } from '../dto/payments.dto';
@@ -51,7 +53,7 @@ export class PaymentsController {
       ...payment,
       paymentCategoryName: payment.paymentCategory.name,
       paymentCategoryColor: payment.paymentCategory.color,
-      paymentDate: new Date(payment.paymentDatetime).toLocaleDateString(),
+      paymentDate: format(new Date(payment.paymentDatetime), 'yyyy-MM-dd'),
     }));
     return res;
   }
@@ -86,7 +88,7 @@ export class PaymentsController {
       ...payment,
       paymentCategoryName: payment.paymentCategory.name,
       paymentCategoryColor: payment.paymentCategory.color,
-      paymentDate: new Date(payment.paymentDatetime).toLocaleDateString(),
+      paymentDate: format(new Date(payment.paymentDatetime), 'yyyy-MM-dd'),
       paymentUserName: payment.paymentUser.name,
       paymentUserGroupId: payment.paymentUser.userGroupId,
     }));

@@ -5,8 +5,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'r
 import SignIn from '../pages/SignIn';
 import SignUp from '../pages/SignUp';
 import Payment from '../pages/Payment';
-import Graph from '../pages/Graph';
-// import Liquidation from '../pages/Liquidation_old';
+import HistoryPayment from '../pages/HistoryPayment';
 import Settings from '../pages/Settings';
 import Liquidation from '../pages/Liquidation';
 
@@ -18,7 +17,7 @@ const MyRoutes: React.FC = () => {
       <Route path="/signin" element={<SignIn />} />
       <Route path="/signup" element={<SignUp />} />
       <Route path="/" element={<Payment />} />
-      <Route path="/graph" element={<Graph />} />
+      <Route path="/HistoryPayment" element={<HistoryPayment />} />
       <Route path="/liquidation" element={<Liquidation />} />
       <Route path="/settings" element={<Settings />} />
 

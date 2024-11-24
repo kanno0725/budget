@@ -12,7 +12,7 @@ export type GetPayment = {
   id: number;
   name: string;
   price: number;
-  paymentDatetime: string;
+  paymentDatetime: Date;
   paymentCategoryId: number;
   paymentUserId: number;
   loadRate: number;

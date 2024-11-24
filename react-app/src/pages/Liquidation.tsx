@@ -22,7 +22,7 @@ const Liquidation: React.FC = () => {
     try {
       const res = await axios.get<GetPayment[]>(`${import.meta.env.VITE_REACT_APP_API_URL}/payments?groupId=${localStorage.getItem('usergroupid_str')}&year=${year}&month=${month}`);
       res.data.forEach(el => {
-        el.paymentDatetime = new Date(el.paymentDatetime).toLocaleDateString()
+        // el.paymentDatetime = new Date(el.paymentDatetime).toLocaleDateString()
       });
       setPayments(res.data);
     } catch (err) {
