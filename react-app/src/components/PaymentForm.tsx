@@ -20,8 +20,7 @@ const PaymentForm = (props: {
   useEffect(() => {
     const fetchPaymentCategories = async () => {
       try {
-        const res = await axios.get<PaymentCategory[]>(`${import.meta.env.VITE_REACT_APP_API_URL}/paymentcategories/${localStorage.getItem('usergroupid_str')}`);
-        console.log(`/paymentcategory/${localStorage.getItem('usergroupid_str')}`)
+        const res = await axios.get<PaymentCategory[]>(`${import.meta.env.VITE_REACT_APP_API_URL}/paymentCategories?userGroupId=${localStorage.getItem('usergroupid_str')}`);
         setPaymentCategories(res.data);
       } catch (err) {
         console.error(err);

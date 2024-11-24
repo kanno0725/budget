@@ -37,15 +37,17 @@ type GetPayment = {
 
 @Controller('payments')
 export class PaymentsController {
-  @Get(':userId/user-payments')
-  async getUserPayments(@Param() params): Promise<GetPayment[]> {
+  @Get('/user')
+  async getUserPayments(
+    @Query('userId') userId: number,
+  ): Promise<GetPayment[]> {
     const resPC = await prisma.payments.findMany({
       orderBy: [{ paymentDatetime: 'asc' }, { createdAt: 'asc' }],
       include: {
         paymentCategory: { select: { name: true, color: true } },
       },
       where: {
-        paymentUserId: Number(params.userId),
+        paymentUserId: Number(userId),
         isDeleted: false,
       },
     });
@@ -58,7 +60,7 @@ export class PaymentsController {
     return res;
   }
 
-  @Get('')
+  @Get('userGroup')
   async getGroupPayments(
     @Query('groupId') groupId: number,
     @Query('year') year: number,
@@ -101,14 +103,13 @@ export class PaymentsController {
     return resPayment;
   }
 
-  @Put(':paymentId')
+  @Put(':id')
   async putPayment(
     @Param() params,
     @Body() body: CreatePaymentDto,
   ): Promise<Payment> {
-    // console.log(params.paymentId);
     const resPayment = await prisma.payments.update({
-      where: { id: Number(params.paymentId) },
+      where: { id: Number(params.id) },
       data: {
         name: body.name,
         price: body.price,

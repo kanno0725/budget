@@ -13,7 +13,7 @@ const HistoryPayment: React.FC = () => {
 
   const fetchPayments = async () => {
     try {
-      const res = await axios.get<GetPayment[]>(`${import.meta.env.VITE_REACT_APP_API_URL}/payments/${localStorage.getItem('userid_str')}/user-payments`);
+      const res = await axios.get<GetPayment[]>(`${import.meta.env.VITE_REACT_APP_API_URL}/payments/user?userId=${localStorage.getItem('userid_str')}`);
       setPayments(res.data);
     } catch (err) {
       console.error(err);
@@ -22,8 +22,7 @@ const HistoryPayment: React.FC = () => {
 
   const fetchPaymentCategories = async () => {
     try {
-      const res = await axios.get<PaymentCategory[]>(`${import.meta.env.VITE_REACT_APP_API_URL}/paymentcategories/${localStorage.getItem('usergroupid_str')}`);
-      console.log(`/paymentcategory/${localStorage.getItem('usergroupid_str')}`)
+      const res = await axios.get<PaymentCategory[]>(`${import.meta.env.VITE_REACT_APP_API_URL}/paymentCategories?userGroupId=${localStorage.getItem('usergroupid_str')}`);
       setPaymentCategories(res.data);
     } catch (err) {
       console.error(err);

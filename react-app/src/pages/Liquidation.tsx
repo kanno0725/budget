@@ -20,7 +20,7 @@ const Liquidation: React.FC = () => {
 
   const fetchPayments = async (year: string, month: string) => {
     try {
-      const res = await axios.get<GetPayment[]>(`${import.meta.env.VITE_REACT_APP_API_URL}/payments?groupId=${localStorage.getItem('usergroupid_str')}&year=${year}&month=${month}`);
+      const res = await axios.get<GetPayment[]>(`${import.meta.env.VITE_REACT_APP_API_URL}/payments/userGroup?groupId=${localStorage.getItem('usergroupid_str')}&year=${year}&month=${month}`);
       res.data.forEach(el => {
         // el.paymentDatetime = new Date(el.paymentDatetime).toLocaleDateString()
       });
@@ -32,7 +32,7 @@ const Liquidation: React.FC = () => {
 
   const fetchUsers = async () => {
     try {
-      const res = await axios.get<User[]>(`${import.meta.env.VITE_REACT_APP_API_URL}/users/${localStorage.getItem('usergroupid_str')}/group-users`);
+      const res = await axios.get<User[]>(`${import.meta.env.VITE_REACT_APP_API_URL}/users/userGroup?userGroupId=${localStorage.getItem('usergroupid_str')}`);
       setUsers(res.data);
     } catch (err) {
       console.error(err);

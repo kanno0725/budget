@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Post, Body } from '@nestjs/common';
+import { Controller, Get, Param, Query, Post, Body } from '@nestjs/common';
 import { prisma } from '../model/prisma';
 import { CreateUserDto } from '../dto/users.dto';
 
@@ -28,11 +28,13 @@ export class UsersController {
     return resUser;
   }
 
-  @Get(':userGroupId/group-users')
-  async getGroupUsers(@Param() params): Promise<User[]> {
+  @Get('userGroup')
+  async getGroupUsers(
+    @Query('userGroupId') userGroupId: number,
+  ): Promise<User[]> {
     const resUsers = await prisma.users.findMany({
       where: {
-        userGroupId: Number(params.userGroupId),
+        userGroupId: Number(userGroupId),
       },
     });
     return resUsers;
