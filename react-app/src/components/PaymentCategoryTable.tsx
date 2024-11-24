@@ -16,9 +16,9 @@ import {
   DialogContent,
   Tooltip,
   IconButton,
-  Button,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
+import AddIcon from '@mui/icons-material/Add';
 
 import { PaymentCategory } from '../models/PaymentCategory';
 
@@ -148,11 +148,13 @@ const PaymentCategoryTable = (props:{
     enableKeyboardShortcuts: false,
     enableColumnActions: false,
     enableColumnFilters: false,
-    enablePagination: false,
     enableSorting: false,
     positionPagination: 'none',
     positionGlobalFilter: 'left',
     enableStickyHeader: true,
+    // pagenation
+    enablePagination: false,
+    enableBottomToolbar : false,
     // tool bar
     enableDensityToggle: false,
     enableHiding: false,
@@ -187,8 +189,8 @@ const PaymentCategoryTable = (props:{
     muiTableContainerProps: {
       sx: {
         overflowX: "hidden",
-        maxHeight: '500px',
-        minHeight: '500px',
+        maxHeight: '300px',
+        minHeight: '300px',
         overflowY: "auto", 
       },
     },
@@ -196,8 +198,8 @@ const PaymentCategoryTable = (props:{
     onCreatingRowSave: handleCreatePaymentCategory,
     onCreatingRowCancel: () => setValidationErrors({}),
     renderTopToolbarCustomActions: ({ table }) => (
-        <Button
-          variant="contained"
+        <IconButton
+        //   variant="contained"
           onClick={() => {
             // table.setCreatingRow(true); //simplest way to open the create row modal with no default values
             //or you can pass in a row object to set default values with the `createRow` helper function
@@ -212,8 +214,9 @@ const PaymentCategoryTable = (props:{
             );
           }}
         >
-          分類作成
-        </Button>
+          {/* 分類作成 */}
+          <AddIcon />
+        </IconButton>
       ),
     // edit
     editDisplayMode: 'modal',

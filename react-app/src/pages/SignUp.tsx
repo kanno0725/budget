@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-
+import { Button } from '@mui/material';
 
 import Login from '../commons/Login';
 import { UserGroup } from '../models/UserGroups';
@@ -136,7 +136,10 @@ export const SignUp: React.FC = () => {
         { themeColor }
       </div>
       <div>
-        <button type="submit" className="btn-black">登録</button>
+        {/* <button type="submit" className="btn-black">登録</button> */}
+        <Button variant="contained" color="inherit" type="submit">
+          登録
+        </Button>
       </div>
     </form>
     </div>

@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { Button } from '@mui/material';
+
 import { useNavigate, Link } from 'react-router-dom';
 import Login from '../commons/Login';
 import { User } from '../models/User';
@@ -57,7 +59,10 @@ export const SignIn: React.FC = () => {
             />
           </div>
           <div>
-            <button type="submit" className="btn-black">ログイン</button>
+            {/* <button type="submit" className="btn-black">ログイン</button> */}
+            <Button variant="contained" color="inherit" type="submit">
+              ログイン
+            </Button>
           </div>
           <div>
             新規登録は<Link to="/signup" className='text-sky-600'>こちら</Link>から

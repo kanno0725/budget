@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Button } from '@mui/material';
+
 import { PaymentCategory } from '../models/PaymentCategory';
 import { toISOStringWithTimezone, toFormString } from '../utils/Time';
 import { GetPayment } from '../models/Payment';
+import { parse, format } from 'date-fns';
 
-const PaymentForm = (props: {
-  formPayment?: GetPayment | null | undefined;
-}
-) => {
-  const [id, setId] =  useState(props.formPayment?.id? props.formPayment?.id:'');
-  const [name, setName] =  useState(props.formPayment?.name? props.formPayment?.name:'');
-  const [price, setPrice] = useState(props.formPayment?.price? props.formPayment?.price:'');
-  const [paymentDatetime, setPaymentDatetime] = useState(props.formPayment?.paymentDatetime? toFormString(new Date(props.formPayment?.paymentDatetime)):'');
-  const [selectedPaymentCategoryId, setSelectedPaymentCategoryId] = useState(props.formPayment?.paymentCategoryId? props.formPayment?.paymentCategoryId:'');
+const PaymentForm = () => {
+  const [id, setId] =  useState('');
+  const [name, setName] =  useState('');
+  const [price, setPrice] = useState('');
+  const [paymentDatetime, setPaymentDatetime] = useState(format(new Date(),'yyyy-MM-dd'));
+  const [selectedPaymentCategoryId, setSelectedPaymentCategoryId] = useState('');
   const [isArrowActive, setArrowActive] = useState(false);
   const [paymentCategories, setPaymentCategories] = useState<PaymentCategory[] | null>();
   const [error, setError] = useState<string | null>(null);
@@ -100,8 +100,8 @@ const PaymentForm = (props: {
   };
 
   const handleSelectOption = async (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedPaymentCategoryId = Number(e.target.value);
-    setSelectedPaymentCategoryId(selectedPaymentCategoryId)  
+    // const selectedPaymentCategoryId = Number(e.target.value);
+    setSelectedPaymentCategoryId(e.target.value)  
   };
 
   return (
@@ -152,10 +152,6 @@ const PaymentForm = (props: {
                   required
               />
             </div>
-            {/* {paymentDatetime}
-            {toISOStringWithTimezone(new Date(paymentDatetime))} */}
-            {/* {toISOStringWithTimezone(new Date(paymentDatetime))} */}
-            {/* <label className="form-label" htmlFor="userGroupId">カテゴリー</label> */}
             <label className="col-span-1 text-xl">
             分類
             </label>
@@ -175,7 +171,10 @@ const PaymentForm = (props: {
               </select>
             </div>
             <div className="col-span-3">
-              <button type="submit" className="btn-black">登録</button>
+              <Button variant="contained" color="inherit" type="submit">
+                登録
+              </Button>
+              {/* <button type="submit" className="btn-black">登録</button> */}
             </div>
           </div>
         </form>

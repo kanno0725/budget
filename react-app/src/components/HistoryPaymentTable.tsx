@@ -170,11 +170,13 @@ const HistoryPaymentTable = (props:{
     enableKeyboardShortcuts: false,
     enableColumnActions: false,
     enableColumnFilters: false,
-    enablePagination: false,
     enableSorting: false,
     positionPagination: 'none',
     positionGlobalFilter: 'left',
     enableStickyHeader: true,
+    // pagenation
+    enablePagination: false,
+    enableBottomToolbar : false,
     // tool bar
     enableDensityToggle: false,
     enableHiding: false,
@@ -209,10 +211,11 @@ const HistoryPaymentTable = (props:{
     muiTableContainerProps: {
       sx: {
         overflowX: "hidden",
-        maxHeight: '500px',
-        minHeight: '500px',
+        maxHeight: '550px',
+        minHeight: '550px',
         overflowY: "auto", 
       },
+      // className: 'max-h-32'
     },
     muiTableBodyRowProps: ({ row }) => {
       return {

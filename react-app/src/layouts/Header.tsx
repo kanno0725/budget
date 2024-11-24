@@ -1,5 +1,9 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import {
+  Button,
+} from '@mui/material';
+
 import './Header.css'; // Headerコンポーネントに対応するCSSファイルをインポート
 import { Logout } from '../commons/Login';
 
@@ -18,17 +22,20 @@ const Header: React.FC = () => {
       return (
         <div>
           <span>ユーザー：{userName} </span>
-          <button type="submit" className="btn-white" onClick={() => onLogout()}>
-            Logout
-          </button>
+          <Button variant="outlined" color="inherit" onClick={() => onLogout()}>
+            ログアウト
+          </Button>
         </div>
 
       )
     }else{
       return (
-        <button type="submit" className="btn-white" onClick={() => navigate('/signin')}>
-          Login
-        </button>
+        // <button type="submit" className="btn-white" onClick={() => navigate('/signin')}>
+        //   Login
+        // </button>
+        <Button variant="outlined" color="inherit" onClick={() => navigate('/signin')}>
+          ログイン
+        </Button>
       )
     }
   }

@@ -2,6 +2,7 @@ import React, { type Dispatch, useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 
 import { MRT_RowSelectionState } from 'material-react-table';
+import { Button } from '@mui/material';
 // import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 
 import { GetPayment } from '../models/Payment';
@@ -90,11 +91,17 @@ const Liquidation: React.FC = () => {
         />
       </div>
       <div className='m-2'>
-        清算方法
+        <span className='font-medium text-lg'>清算方法</span>
         <div className='h-24 overflow-y-auto border-2'>
           <LiquidationTable checkedData={checkedData} users={users} />
         </div>
-        <button type="submit" className="btn-black" onClick={onLiquidate} >清算</button>
+        <div className='my-1'>
+          <Button variant="contained" color="inherit" onClick={onLiquidate}>
+            清算
+          </Button>
+        </div>
+
+        {/* <button type="submit" className="btn-black" onClick={onLiquidate} >清算</button> */}
       </div>
     </div>
   );

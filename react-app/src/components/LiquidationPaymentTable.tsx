@@ -76,10 +76,12 @@ const LiquidationPaymentTable = (props:{
     enableKeyboardShortcuts: false,
     enableColumnActions: false,
     enableColumnFilters: false,
-    enablePagination: false,
     enableSorting: false,
     positionPagination: 'none',
     positionGlobalFilter: 'left',
+    // pagenation
+    enablePagination: false,
+    enableBottomToolbar : false,
     // tool bar
     enableDensityToggle: false,
     enableHiding: false,
@@ -114,8 +116,8 @@ const LiquidationPaymentTable = (props:{
     muiTableContainerProps: {
       sx: {
         overflowX: "hidden",
-        maxHeight: '250px',
-        minHeight: '250px',
+        maxHeight: '300px',
+        minHeight: '300px',
         overflowY: "auto", 
       },
     },
