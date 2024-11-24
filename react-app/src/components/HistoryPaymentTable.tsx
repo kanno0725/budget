@@ -31,6 +31,7 @@ const HistoryPaymentTable = (props:{
 }) => {
   const paymentData: GetPayment[] = props.payments ? props.payments : []
   const paymentCategories: PaymentCategory[] = props.paymentCategories ? props.paymentCategories : []
+  const [validationErrors, setValidationErrors] = useState<Record<string, string | undefined>>({});
 //   console.log(paymentCategories.map((category) => ({ text: category.name, value: category.name })))
   const columns = useMemo<MRT_ColumnDef<GetPayment>[]>(
     () => [
@@ -45,15 +46,40 @@ const HistoryPaymentTable = (props:{
         ),
         muiEditTextFieldProps: {
             type: 'date',
-          },
+            error: !!validationErrors?.paymentDate,
+            helperText: validationErrors?.paymentDate,
+            onFocus: () =>
+              setValidationErrors({
+                ...validationErrors,
+                paymentDate: undefined,
+              }),
+        },
       },
       {
         accessorKey: 'name',
         header: '品目名',
+        muiEditTextFieldProps: {
+            error: !!validationErrors?.name,
+            helperText: validationErrors?.name,
+            onFocus: () =>
+              setValidationErrors({
+                ...validationErrors,
+                name: undefined,
+              }),
+          },
       },
       {
         accessorKey: 'price',
         header: '金額',
+        muiEditTextFieldProps: {
+            error: !!validationErrors?.price,
+            helperText: validationErrors?.price,
+            onFocus: () =>
+              setValidationErrors({
+                ...validationErrors,
+                price: undefined,
+              }),
+          },
       },
       {
         accessorKey: 'paymentCategoryName',
@@ -79,11 +105,18 @@ const HistoryPaymentTable = (props:{
         editSelectOptions: paymentCategories.map((category) => ({ text: category.name, value: category.name })),
         muiEditTextFieldProps: {
           select: true,
+          error: !!validationErrors?.paymentCategoryName,
+          helperText: validationErrors?.paymentCategoryName,
+          onFocus: () =>
+            setValidationErrors({
+              ...validationErrors,
+              paymentCategoryName: undefined,
+            }),
         },
         
       },
     ],
-    [props.paymentCategories],
+    [props.paymentCategories, validationErrors],
   );
 
   //UPDATE action
@@ -92,12 +125,12 @@ const HistoryPaymentTable = (props:{
     table,
     row,
     }) => {
-    // const newValidationErrors = validateUser(values);
-    // if (Object.values(newValidationErrors).some((error) => error)) {
-    //     setValidationErrors(newValidationErrors);
-    //     return;
-    // }
-    // setValidationErrors({});
+    const newValidationErrors = validatePayment(values);
+    if (Object.values(newValidationErrors).some((error) => error)) {
+        setValidationErrors(newValidationErrors);
+        return;
+    }
+    setValidationErrors({});
     const paymentCategoryId = paymentCategories.filter((el) => el.name == values.paymentCategoryName)[0].id
     await axios.put(`${import.meta.env.VITE_REACT_APP_API_URL}/payments/${row.original.id}`, {
         name: values.name,
@@ -119,7 +152,6 @@ const HistoryPaymentTable = (props:{
           alert(`支払い登録失敗 error code = ${e}`)
         }
       })
-    // await updateUser(values);
     table.setEditingRow(null) //exit editing mode
     props.setReFetchFlag(true) // reload
     };
@@ -187,13 +219,11 @@ const HistoryPaymentTable = (props:{
         hover: false,
         sx: {
           //Set a fixed height for pinned rows
-          // height: row.getIsPinned() ? "36px" : "35px",
           backgroundColor: row.original.isLiquidated ? "#cccccc" : undefined
         },
       };
     },
     // edit
-    // getRowId: (row) => String(row.id),
     editDisplayMode: 'modal',
     enableEditing: true,
     muiEditTextFieldProps: {
@@ -227,6 +257,7 @@ const HistoryPaymentTable = (props:{
     </Box>
     ),
     onEditingRowSave: handleSavePayment,
+    onEditingRowCancel: () => setValidationErrors({}),
   });
 
   return (
@@ -235,5 +266,17 @@ const HistoryPaymentTable = (props:{
     </div>
   );
 };
+
+const validateRequired = (value: string) => !!value.length;
+const validatePrice = (value: string) => !!value.length && value.match(/^\d+$/)
+
+function validatePayment(payment: GetPayment) {
+  return {
+    paymentDate: !validateRequired(payment.paymentDate) ? '値が空です' : '',
+    name: !validateRequired(payment.name) ? '値が空です' : '',
+    price: !validatePrice(String(payment.price)) ? '数字を入力してください' : '',
+    paymentCategoryName: !validateRequired(payment.paymentCategoryName) ? '値が空です' : '',
+  };
+}
 
 export default HistoryPaymentTable

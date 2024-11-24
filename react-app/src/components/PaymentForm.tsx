@@ -107,7 +107,7 @@ const PaymentForm = (props: {
 
   return (
     <div>
-      <div className="container m-4">
+      <div className="container p-4">
         <form onSubmit={handleSubmit} >
           {/* <h2 className="text-3xl mb-4">登録画面</h2> */}
           <div className="grid grid-cols-5 gap-2">
