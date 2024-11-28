@@ -8,7 +8,6 @@ import { GetPayment } from '../models/Payment';
 import { parse, format } from 'date-fns';
 
 const PaymentForm = () => {
-  const [id, setId] =  useState('');
   const [name, setName] =  useState('');
   const [price, setPrice] = useState('');
   const [paymentDatetime, setPaymentDatetime] = useState(format(new Date(),'yyyy-MM-dd'));
@@ -32,7 +31,6 @@ const PaymentForm = () => {
  const apiCallSuccess = () => {
   alert('支払いが登録されました');
   // 入力欄をクリア
-  setId('');
   setName('');
   setPrice('');
   setPaymentDatetime('');
@@ -50,34 +48,11 @@ const PaymentForm = () => {
     e.preventDefault();
 
     try {
-      if ( id !== '' ){
-        console.log(id)
-        await axios.put(`${import.meta.env.VITE_REACT_APP_API_URL}/payments/${id}`, {
-          name: name,
-          price: Number(price),
-          paymentDatetime: toISOStringWithTimezone(new Date(paymentDatetime)),
-          paymentCategoryId: selectedPaymentCategoryId,
-          paymentUserId: Number(localStorage.getItem('userid_str')),
-          loadRate: 50
-        })
-        .then((res) => {
-          if(res.status == 200) {
-            apiCallSuccess()
-          } else {
-            alert(`支払い登録失敗 error code = ${res.status}`);
-          }
-        })
-        .catch((e) => {
-          if (axios.isAxiosError(e) && e.response) {
-            apiCallError(e.response?.status)
-          }
-        })
-      }else{
         await axios.post(`${import.meta.env.VITE_REACT_APP_API_URL}/payments`, {
           name: name,
           price: Number(price),
           paymentDatetime: toISOStringWithTimezone(new Date(paymentDatetime)),
-          paymentCategoryId: selectedPaymentCategoryId,
+          paymentCategoryId: Number(selectedPaymentCategoryId),
           paymentUserId: Number(localStorage.getItem('userid_str')),
           loadRate: 50
         })
@@ -93,7 +68,6 @@ const PaymentForm = () => {
             apiCallError(e.response?.status)
           }
         })
-      }
     } catch (e) {
       console.log(e);
     }
@@ -174,7 +148,6 @@ const PaymentForm = () => {
               <Button variant="contained" color="inherit" type="submit">
                 登録
               </Button>
-              {/* <button type="submit" className="btn-black">登録</button> */}
             </div>
           </div>
         </form>
