@@ -1,0 +1,7 @@
+FROM nginx:alpine
+COPY ./react-app/dist /usr/share/nginx/html
+RUN rm -f /etc/nginx/conf.d/*
+COPY ./docker/front/nginx/default.conf /etc/nginx/conf.d/
+
+# WORKDIR /usr/share/nginx/html
+# CMD ["nginx", "-g", "daemon off;"]
