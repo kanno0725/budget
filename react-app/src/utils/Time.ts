@@ -1,5 +1,3 @@
-import { format } from "date-fns";
-
 export function toISOStringWithTimezone(date: Date): string {
     const pad = function (str: string): string {
         return ('0' + str).slice(-2);
