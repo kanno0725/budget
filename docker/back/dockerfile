@@ -1,0 +1,23 @@
+# ビルドステージ
+FROM node:18.13.0-bullseye-slim as builder
+ENV NODE_ENV production
+WORKDIR /usr/src/app
+
+COPY ./nest-app/package*.json ./
+RUN npm install
+
+COPY ./nest-app/ ./
+RUN npm run build
+
+# デプロイステージ
+FROM node:18.13.0-bullseye-slim as deploy
+ENV NODE_ENV production
+WORKDIR /usr/src/app
+
+COPY --from=builder --chown=node:node /usr/src/app/ /usr/src/app/ 
+RUN npm ci --only=production
+EXPOSE 3001
+
+## nodeユーザーとして実行
+USER node
+CMD ["npm", "run", "start:prod"]

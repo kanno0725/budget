@@ -5,10 +5,16 @@ import { UserGroupsController } from './controller/userGroups.controller';
 import { PaymentsController } from './controller/payments.controller';
 import { PaymentCategoriesController } from './controller/paymentCategories.controller';
 import { AppService } from './app.service';
+import { ConfigModule } from '@nestjs/config';
 // import { CorsMiddleware } from './cors.middleware';
 
 @Module({
-  imports: [],
+  imports: [
+    // ConfigModule.forRoot({
+    //   envFilePath: [`.env.${process.env.NODE_ENV}`],
+    //   isGlobal: true,
+    // }),
+  ],
   controllers: [
     AppController,
     UsersController,

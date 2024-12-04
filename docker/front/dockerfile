@@ -1,7 +1,19 @@
-FROM nginx:alpine
-COPY ./react-app/dist /usr/share/nginx/html
+# ビルドステージ
+FROM node:alpine as builder
+WORKDIR /usr/src/app
+
+COPY ./react-app/ ./
+RUN npm install
+RUN npm run build:prod
+
+# デプロイステージ
+FROM nginx:alpine as deploy
+ENV NODE_ENV production
+
+COPY --from=builder --chown=node:node /usr/src/app/dist /usr/share/nginx/html
+
+RUN apk add sudo nano
+
+# nginxの設定ファイルの作成
 RUN rm -f /etc/nginx/conf.d/*
 COPY ./docker/front/nginx/default.conf /etc/nginx/conf.d/
-
-# WORKDIR /usr/share/nginx/html
-# CMD ["nginx", "-g", "daemon off;"]
