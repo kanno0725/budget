@@ -1,7 +1,7 @@
 import { Controller, Get, Param, Post, Put, Body, Query } from '@nestjs/common';
 import { prisma } from '../model/prisma';
 // import { CreateUserDto } from '../dto/users.dto';
-import { CreatePaymentCategoryDto } from '../dto/paymentCategories.dto';
+import { CreatePaymentCategoryDto } from './paymentCategories.dto';
 
 type PaymentCategory = {
   id: number;

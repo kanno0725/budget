@@ -1,6 +1,7 @@
 import { Controller, Get, Param, Query, Post, Body } from '@nestjs/common';
 import { prisma } from '../model/prisma';
-import { CreateUserDto } from '../dto/users.dto';
+import { UsersService } from './users.service';
+import { CreateUserDto } from './users.dto';
 
 type User = {
   id: number;
@@ -13,19 +14,16 @@ type User = {
 
 @Controller('users')
 export class UsersController {
+  constructor(private usersService: UsersService) {}
+
   @Get()
-  getAllUsers(): string {
-    return 'All Users';
+  findAll(): Promise<User[]> {
+    return this.usersService.findAll();
   }
 
   @Get(':loginId')
-  async getUserProfile(@Param() params): Promise<User> {
-    const resUser = await prisma.users.findUnique({
-      where: {
-        loginId: `${params.loginId}`,
-      },
-    });
-    return resUser;
+  async findLoginUser(@Param() params): Promise<User> {
+    return this.usersService.findLoginUser(params.loginId);
   }
 
   @Get('userGroup')

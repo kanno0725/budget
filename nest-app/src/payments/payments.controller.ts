@@ -12,7 +12,7 @@ import { format } from 'date-fns';
 
 import { prisma } from '../model/prisma';
 import type { Prisma } from '@prisma/client';
-import { CreatePaymentDto, PaymentIdsDto } from '../dto/payments.dto';
+import { CreatePaymentDto, PaymentIdsDto } from './payments.dto';
 
 type Payment = {
   name: string;
