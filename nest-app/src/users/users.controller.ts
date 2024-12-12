@@ -1,5 +1,4 @@
 import { Controller, Get, Param, Query, Post, Body } from '@nestjs/common';
-import { prisma } from '../model/prisma';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './users.dto';
 
@@ -30,17 +29,11 @@ export class UsersController {
   async getGroupUsers(
     @Query('userGroupId') userGroupId: number,
   ): Promise<User[]> {
-    const resUsers = await prisma.users.findMany({
-      where: {
-        userGroupId: Number(userGroupId),
-      },
-    });
-    return resUsers;
+    return this.usersService.getGroupUsers(userGroupId);
   }
 
   @Post('')
   async createUser(@Body() data: CreateUserDto): Promise<User> {
-    const resUser = await prisma.users.create({ data });
-    return resUser;
+    return this.usersService.createUser(data);
   }
 }

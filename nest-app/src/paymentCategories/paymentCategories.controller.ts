@@ -1,7 +1,7 @@
 import { Controller, Get, Param, Post, Put, Body, Query } from '@nestjs/common';
-import { prisma } from '../model/prisma';
 // import { CreateUserDto } from '../dto/users.dto';
 import { CreatePaymentCategoryDto } from './paymentCategories.dto';
+import { PaymentCategoriesService } from './paymentCategories.service';
 
 type PaymentCategory = {
   id: number;
@@ -12,39 +12,27 @@ type PaymentCategory = {
 
 @Controller('paymentCategories')
 export class PaymentCategoriesController {
+  constructor(private paymentCategoriesService: PaymentCategoriesService) {}
+
   @Get('')
   async getAllPaymentCategorie(
     @Query('userGroupId') userGroupId: number,
   ): Promise<PaymentCategory[]> {
-    const resPC = await prisma.paymentCategories.findMany({
-      where: {
-        userGroupId: Number(userGroupId),
-      },
-    });
-    return resPC;
+    return this.paymentCategoriesService.getAllPaymentCategorie(userGroupId);
   }
 
   @Post('')
   async postPaymentCategory(
     @Body() data: CreatePaymentCategoryDto,
   ): Promise<PaymentCategory> {
-    const resPC = await prisma.paymentCategories.create({ data });
-    return resPC;
+    return this.paymentCategoriesService.postPaymentCategory(data);
   }
 
   @Put(':id')
   async putPaymentCategory(
     @Param() params,
-    @Body() body: CreatePaymentCategoryDto,
+    @Body() data: CreatePaymentCategoryDto,
   ): Promise<PaymentCategory> {
-    const resPC = await prisma.paymentCategories.update({
-      where: { id: Number(params.id) },
-      data: {
-        name: body.name,
-        color: body.color,
-        userGroupId: body.userGroupId,
-      },
-    });
-    return resPC;
+    return this.paymentCategoriesService.putPaymentCategory(params.id, data);
   }
 }

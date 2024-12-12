@@ -8,11 +8,8 @@ import {
   Body,
   Delete,
 } from '@nestjs/common';
-import { format } from 'date-fns';
-
-import { prisma } from '../model/prisma';
-import type { Prisma } from '@prisma/client';
 import { CreatePaymentDto, PaymentIdsDto } from './payments.dto';
+import { PaymentsService } from './payments.service';
 
 type Payment = {
   name: string;
@@ -37,27 +34,13 @@ type GetPayment = {
 
 @Controller('payments')
 export class PaymentsController {
+  constructor(private paymentsService: PaymentsService) {}
+
   @Get('/user')
   async getUserPayments(
     @Query('userId') userId: number,
   ): Promise<GetPayment[]> {
-    const resPC = await prisma.payments.findMany({
-      orderBy: [{ paymentDatetime: 'asc' }, { createdAt: 'asc' }],
-      include: {
-        paymentCategory: { select: { name: true, color: true } },
-      },
-      where: {
-        paymentUserId: Number(userId),
-        isDeleted: false,
-      },
-    });
-    const res = resPC.map((payment) => ({
-      ...payment,
-      paymentCategoryName: payment.paymentCategory.name,
-      paymentCategoryColor: payment.paymentCategory.color,
-      paymentDate: format(new Date(payment.paymentDatetime), 'yyyy-MM-dd'),
-    }));
-    return res;
+    return this.paymentsService.getUserPayments(userId);
   }
 
   @Get('userGroup')
@@ -66,41 +49,12 @@ export class PaymentsController {
     @Query('year') year: number,
     @Query('month') month: number,
   ): Promise<GetPayment[]> {
-    const startMonth: Date = new Date(year, month - 1);
-    const endMonth: Date = new Date(year, month);
-    const resPC = await prisma.payments.findMany({
-      orderBy: [{ paymentDatetime: 'asc' }, { createdAt: 'asc' }],
-      include: {
-        paymentCategory: { select: { name: true, color: true } },
-        paymentUser: { select: { name: true, userGroupId: true } },
-      },
-      where: {
-        paymentUser: {
-          userGroupId: Number(groupId),
-        },
-        paymentDatetime: {
-          gte: startMonth, // Greater than or equal (>=)
-          lt: endMonth, // Less than (<)
-        },
-        // isLiquidated: false,
-        isDeleted: false,
-      },
-    });
-    const res = resPC.map((payment) => ({
-      ...payment,
-      paymentCategoryName: payment.paymentCategory.name,
-      paymentCategoryColor: payment.paymentCategory.color,
-      paymentDate: format(new Date(payment.paymentDatetime), 'yyyy-MM-dd'),
-      paymentUserName: payment.paymentUser.name,
-      paymentUserGroupId: payment.paymentUser.userGroupId,
-    }));
-    return res;
+    return this.paymentsService.getGroupPayments(groupId, year, month);
   }
 
   @Post('')
   async postPayment(@Body() data: CreatePaymentDto): Promise<Payment> {
-    const resPayment = await prisma.payments.create({ data });
-    return resPayment;
+    return this.paymentsService.createPayment(data);
   }
 
   @Put(':id')
@@ -108,50 +62,16 @@ export class PaymentsController {
     @Param() params,
     @Body() body: CreatePaymentDto,
   ): Promise<Payment> {
-    const resPayment = await prisma.payments.update({
-      where: { id: Number(params.id) },
-      data: {
-        name: body.name,
-        price: body.price,
-        paymentDatetime: body.paymentDatetime,
-        paymentCategoryId: body.paymentCategoryId,
-      },
-    });
-    return resPayment;
+    return this.paymentsService.putPayment(params.id, body);
   }
 
   @Post('liquidate')
   async postPaymentsLiquidate(@Body() data: PaymentIdsDto): Promise<null> {
-    const where: Prisma.PaymentsWhereInput = {
-      OR: [],
-    };
-    data.ids.forEach((el) => {
-      where.OR.push({
-        id: Number(el),
-      });
-    });
-
-    const updateUser = await prisma.payments.updateMany({
-      where,
-      data: {
-        isLiquidated: true,
-      },
-    });
-
-    return null;
+    return this.paymentsService.paymentsLiquidate(data);
   }
 
   @Delete(':id')
   async deletePayment(@Param() params): Promise<null> {
-    const updateUser = await prisma.payments.update({
-      where: {
-        id: Number(params.id),
-      },
-      data: {
-        isDeleted: true,
-      },
-    });
-
-    return null;
+    return this.paymentsService.deletePayment(params.id);
   }
 }

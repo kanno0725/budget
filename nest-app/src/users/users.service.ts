@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { prisma } from '../model/prisma';
+import { CreateUserDto } from './users.dto';
 // import { Cat } from './interfaces/cat.interface';
 
 type User = {
@@ -24,6 +25,20 @@ export class UsersService {
         loginId: `${loginId}`,
       },
     });
+    return resUser;
+  }
+
+  async getGroupUsers(userGroupId: number): Promise<User[]> {
+    const resUsers = await prisma.users.findMany({
+      where: {
+        userGroupId: Number(userGroupId),
+      },
+    });
+    return resUsers;
+  }
+
+  async createUser(data: CreateUserDto): Promise<User> {
+    const resUser = await prisma.users.create({ data });
     return resUser;
   }
 }

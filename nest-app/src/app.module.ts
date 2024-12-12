@@ -1,12 +1,11 @@
 import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { AppController } from './app.controller';
-import { UsersController } from './users/users.controller';
-import { UserGroupsController } from './userGroups/userGroups.controller';
-import { PaymentsController } from './payments/payments.controller';
-import { PaymentCategoriesController } from './paymentCategories/paymentCategories.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from './users/users.module';
+import { UserGroupsModule } from './userGroups/userGroups.module';
+import { PaymentsModule } from './payments/payments.module';
+import { PaymentCategoriesModule } from './paymentCategories/paymentCategories.module';
 // import { CorsMiddleware } from './cors.middleware';
 
 @Module({
@@ -16,14 +15,11 @@ import { UsersModule } from './users/users.module';
     //   isGlobal: true,
     // }),
     UsersModule,
+    UserGroupsModule,
+    PaymentsModule,
+    PaymentCategoriesModule,
   ],
-  controllers: [
-    AppController,
-    // UsersController,
-    UserGroupsController,
-    PaymentsController,
-    PaymentCategoriesController,
-  ],
+  controllers: [AppController],
   providers: [AppService],
 })
 // export class AppModule implements NestModule {
